@@ -1,0 +1,4 @@
+
+matrix.geromics.co.uk {
+  reverse_proxy synapse:8008
+}

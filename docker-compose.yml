@@ -1,0 +1,34 @@
+
+version: '3'
+
+services:
+  homeserver:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    volumes:
+      - synapse-data:/data
+    networks:
+      - web
+      - backend
+
+  caddy:
+    image: caddy:2.6-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+
+volumes:
+  synapse-data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  web:
+  backend:
