@@ -10,7 +10,16 @@ services:
     networks:
       - web
       - backend
-
+  
+  signald:
+    container_name: signald
+    image: docker.io/signald/signald
+    restart: unless-stopped
+    volumes:
+      - ./signald:/signald
+    networks:
+      - backend
+  
   caddy:
     image: caddy:2.6-alpine
     restart: unless-stopped
