@@ -1,37 +1,56 @@
 
-version: '3'
+version: '3.7'
 
 services:
-  homeserver:
+  caddy:
+    image: caddy:2.6-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - web
+
+  synapse:
     image: matrixdotorg/synapse:latest
-    container_name: synapse
     volumes:
       - synapse-data:/data
     networks:
       - web
       - backend
-  
+    depends_on:
+      - caddy
+
   signald:
-    container_name: signald
-    image: docker.io/signald/signald
-    restart: unless-stopped
+    image: docker.io/signald/signald:latest
     volumes:
+      - ./signald:/signald
+
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: mautrixsignal
+      POSTGRES_DATABASE: mautrixsignal
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  mautrix-signal:
+    image: dock.mau.dev/mautrix/signal
+    volumes:
+      - ./bridge:/data
       - ./signald:/signald
     networks:
       - backend
-  
-  caddy:
-    image: caddy:2.6-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - web
+    depends_on:
+      - synapse
+      - signald
+      - db
 
 volumes:
   synapse-data:
