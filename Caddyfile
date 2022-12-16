@@ -1,3 +1,9 @@
 matrix.geromics.co.uk {
 	reverse_proxy synapse:8008
+#	reverse_proxy /_matrix/* synapse:8008
+#	reverse_proxy /_synapse/client/* synapse:8008
+}
+
+matrix.geromics.co.uk:8448 {
+	reverse_proxy synapse:8008
 }
