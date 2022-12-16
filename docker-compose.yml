@@ -28,7 +28,7 @@ services:
   signald:
     image: docker.io/signald/signald:latest
     volumes:
-      - ./signald:/signald
+      - signald-data:/signald
 
   db:
     image: postgres:13-alpine
@@ -37,15 +37,15 @@ services:
       POSTGRES_DATABASE: mautrixsignal
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     networks:
       - backend
 
   mautrix-signal:
     image: dock.mau.dev/mautrix/signal
     volumes:
-      - ./bridge:/data
-      - ./signald:/signald
+      - bridge-data:/data
+      - signald-data:/signald
     networks:
       - backend
     depends_on:
@@ -54,9 +54,12 @@ services:
       - db
 
 volumes:
-  synapse-data:
-  caddy_data:
+  bridge-data:
   caddy_config:
+  caddy_data:
+  db:
+  signald-data:
+  synapse-data:
 
 networks:
   web:
